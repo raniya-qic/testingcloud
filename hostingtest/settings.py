@@ -76,10 +76,22 @@ WSGI_APPLICATION = 'hostingtest.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# Detect Cloud Run (Google sets K_SERVICE there)
+IN_CLOUD_RUN = os.getenv("K_SERVICE") is not None
+
+# Use /tmp in Cloud Run; use local file in dev
+DEFAULT_DB_PATH = "/tmp/db.sqlite3" if IN_CLOUD_RUN else str(BASE_DIR / "db.sqlite3")
+
+# Allow override with an env var if you ever need it
+DB_PATH = os.getenv("DB_PATH", DEFAULT_DB_PATH)
+
+# Make sure the folder exists (important if you ever point DB_PATH to a new folder)
+os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': DB_PATH,
     }
 }
 

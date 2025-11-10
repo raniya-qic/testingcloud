@@ -33,3 +33,10 @@ CMD exec gunicorn hostingtest.wsgi:application \
     --workers 2 \
     --threads 4 \
     --timeout 120
+
+    # Copy entrypoint
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+# Run the entrypoint (migrate, then gunicorn)
+CMD ["/app/entrypoint.sh"]

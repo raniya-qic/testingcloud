@@ -1,19 +1,15 @@
 substitutions:
-  _REGION: asia-south1
+  _REGION: me-central1
   _SERVICE_NAME: django-hostingtest
-  _REPO_NAME: $REPO_NAME
-  _IMAGE: $_REGION-docker.pkg.dev/$PROJECT_ID/$_SERVICE_NAME/app:$_COMMIT_SHA
+  _IMAGE: $_REGION-docker.pkg.dev/$PROJECT_ID/$_SERVICE_NAME/app:$COMMIT_SHA
 
 steps:
-  # Build container
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', '$_IMAGE', '.']
 
-  # Push to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', '$_IMAGE']
 
-  # Deploy to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
