@@ -79,21 +79,41 @@ WSGI_APPLICATION = 'hostingtest.wsgi.application'
 # Detect Cloud Run (Google sets K_SERVICE there)
 IN_CLOUD_RUN = os.getenv("K_SERVICE") is not None
 
-# Use /tmp in Cloud Run; use local file in dev
-DEFAULT_DB_PATH = "/tmp/db.sqlite3" if IN_CLOUD_RUN else str(BASE_DIR / "db.sqlite3")
+# # Use /tmp in Cloud Run; use local file in dev
+# DEFAULT_DB_PATH = "/tmp/db.sqlite3" if IN_CLOUD_RUN else str(BASE_DIR / "db.sqlite3")
 
-# Allow override with an env var if you ever need it
-DB_PATH = os.getenv("DB_PATH", DEFAULT_DB_PATH)
+# # Allow override with an env var if you ever need it
+# DB_PATH = os.getenv("DB_PATH", DEFAULT_DB_PATH)
 
-# Make sure the folder exists (important if you ever point DB_PATH to a new folder)
-os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+# # Make sure the folder exists (important if you ever point DB_PATH to a new folder)
+# os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': DB_PATH,
+#     }
+# }
+
+
+INSTANCE_CONNECTION_NAME = os.getenv("INSTANCE_CONNECTION_NAME", "")
+DB_NAME = os.getenv("DB_NAME", "appdb")
+DB_USER = os.getenv("DB_USER", "appuser")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "")
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': DB_PATH,
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        # Use the Cloud SQL Unix socket (no VPC needed)
+        "HOST": f"/cloudsql/{INSTANCE_CONNECTION_NAME}",
+        "PORT": "5432",
+        "NAME": DB_NAME,
+        "USER": DB_USER,
+        "PASSWORD": DB_PASSWORD,
+        "CONN_MAX_AGE": 300,  # keep connections alive for performance
     }
 }
+
 
 
 # Password validation
