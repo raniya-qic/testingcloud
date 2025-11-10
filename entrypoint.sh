@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
-# Collect static & migrate before serving
 python manage.py collectstatic --noinput || true
 python manage.py migrate --noinput
 
-# (Optional) auto-create an admin user if env vars are defined
+# Optional: auto-create superuser if env provided
 if [ -n "$DJANGO_SUPERUSER_USERNAME" ] && [ -n "$DJANGO_SUPERUSER_EMAIL" ] && [ -n "$DJANGO_SUPERUSER_PASSWORD" ]; then
 python - <<'PYCODE'
 import os
@@ -24,7 +23,6 @@ print("Superuser ready.")
 PYCODE
 fi
 
-# Start Gunicorn (project module = hostingtest)
 exec gunicorn hostingtest.wsgi:application \
   --bind 0.0.0.0:${PORT:-8080} \
   --workers 2 --threads 4 --timeout 120
