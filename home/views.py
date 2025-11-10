@@ -4,4 +4,4 @@ from . models import *
 
 def home_page(request):
     nms=sampledb.objects.all()
-    return render(request,'home.html')
+    return render(request,'home.html',{'n':nms})
