@@ -40,3 +40,8 @@ RUN chmod +x /app/entrypoint.sh
 
 # Run the entrypoint (migrate, then gunicorn)
 CMD ["/app/entrypoint.sh"]
+
+COPY entrypoint.sh /app/entrypoint.sh
+# strip CRLF and ensure executable
+RUN sed -i 's/\r$//' /app/entrypoint.sh && chmod +x /app/entrypoint.sh
+CMD ["/app/entrypoint.sh"]
