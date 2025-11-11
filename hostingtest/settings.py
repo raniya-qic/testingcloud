@@ -23,7 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-4queu^lu7$&6gt+co)l#bth33eqf6io!scd=rjm8(8&12r*ft+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
+
+DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() == "true"
+
 
 ALLOWED_HOSTS = ['*']
 
@@ -42,7 +45,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.security.SecurityMiddleware',    
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -75,12 +80,50 @@ WSGI_APPLICATION = 'hostingtest.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / "db.sqlite3",
+# --- Database: Cloud SQL Postgres via Connector ---
+DB_NAME = os.environ.get("DB_NAME", "appdb")
+DB_USER = os.environ.get("DB_USER", "appuser")
+DB_PASS = os.environ.get("DB_PASS", "test")
+DB_CONN_NAME = os.environ.get("INSTANCE_CONNECTION_NAME") 
+
+# ai-innovations-exp:us-central1:django-postgres
+
+if DB_CONN_NAME:
+    # Use the Cloud SQL Python Connector
+    from google.cloud.sql.connector import Connector, IPTypes
+    import psycopg
+    connector = Connector()
+
+    def getconn():
+        return connector.connect(
+            DB_CONN_NAME,
+            "pg8000",  # psycopg3 speaks pg8000 wire protocol through the connector
+            user=DB_USER,
+            password=DB_PASS,
+            db=DB_NAME,
+            ip_type=IPTypes.PUBLIC,  # or PRIVATE if you configure it
+        )
+
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": DB_NAME,
+            "USER": DB_USER,
+            "PASSWORD": DB_PASS,
+            "HOST": f"/cloudsql/{DB_CONN_NAME}",
+            "PORT": "5432",
+            "OPTIONS": {
+                "connection_factory": getconn
+            },
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 # Password validation
@@ -119,6 +162,12 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
