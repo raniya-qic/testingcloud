@@ -3,31 +3,25 @@ __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
-*.so
-*.egg
-*.egg-info/
-dist/
-build/
-.eggs/
-
-# Django
-*.log
-*.pot
 *.pyc
-__pycache__/
+*.pdb
+*.pkl
+*.log
+
+# Django specific
 db.sqlite3
+*.sqlite3
 media/
 staticfiles/
-static/
+*.pot
+*.pydevproject
 
 # Environment
 .env
 venv/
-ENV/
 env/
 .venv/
-.env.bak
-.env.*
+ENV/
 
 # IDEs and editors
 .vscode/
@@ -39,11 +33,7 @@ env/
 .DS_Store
 Thumbs.db
 
-# Migrations (optional — uncomment if you don't want to track them)
-# */migrations/*.py
-# !*/migrations/__init__.py
-
-# Backup or temporary files
+# Other
 *.bak
 *.swp
 *.tmp

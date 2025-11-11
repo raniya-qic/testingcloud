@@ -42,9 +42,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    "whitenoise.middleware.WhiteNoiseMiddleware",
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.security.SecurityMiddleware',    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -76,44 +74,13 @@ WSGI_APPLICATION = 'hostingtest.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# Detect Cloud Run (Google sets K_SERVICE there)
-IN_CLOUD_RUN = os.getenv("K_SERVICE") is not None
-
-# # Use /tmp in Cloud Run; use local file in dev
-# DEFAULT_DB_PATH = "/tmp/db.sqlite3" if IN_CLOUD_RUN else str(BASE_DIR / "db.sqlite3")
-
-# # Allow override with an env var if you ever need it
-# DB_PATH = os.getenv("DB_PATH", DEFAULT_DB_PATH)
-
-# # Make sure the folder exists (important if you ever point DB_PATH to a new folder)
-# os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': DB_PATH,
-#     }
-# }
-
-
-INSTANCE_CONNECTION_NAME = os.getenv("INSTANCE_CONNECTION_NAME", "")
-DB_NAME = os.getenv("DB_NAME", "appdb")
-DB_USER = os.getenv("DB_USER", "appuser")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "")
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        # Use the Cloud SQL Unix socket (no VPC needed)
-        "HOST": f"/cloudsql/{INSTANCE_CONNECTION_NAME}",
-        "PORT": "5432",
-        "NAME": DB_NAME,
-        "USER": DB_USER,
-        "PASSWORD": DB_PASSWORD,
-        "CONN_MAX_AGE": 300,  # keep connections alive for performance
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / "db.sqlite3",
     }
 }
-
 
 
 # Password validation
@@ -158,4 +125,3 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
