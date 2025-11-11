@@ -28,8 +28,20 @@ SECRET_KEY = 'django-insecure-4queu^lu7$&6gt+co)l#bth33eqf6io!scd=rjm8(8&12r*ft+
 DEBUG = True
 
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.environ.get(
+    "ALLOWED_HOSTS",
+    "khabir-157983859877.me-central1.run.app,.run.app,.a.run.app"
+).split(",")
 
+CSRF_TRUSTED_ORIGINS = os.environ.get(
+    "CSRF_TRUSTED_ORIGINS",
+    "https://khabir-157983859877.me-central1.run.app,https://*.run.app,https://*.a.run.app"
+).split(",")
+
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 # Application definition
 
@@ -86,8 +98,8 @@ WSGI_APPLICATION = 'hostingtest.wsgi.application'
 #         "ENGINE": "django.db.backends.postgresql",
 #         "NAME": os.environ.get("DB_NAME", "testdb"),
 #         "USER": os.environ.get("DB_USER", "postgres"),
-#         "PASSWORD": os.environ.get("DB_PASSWORD", "test"),
-#         "HOST": os.environ.get("DB_HOST", "127.0.0.1"),  # proxy
+#         "PASSWORD": os.environ.get("DB_PASSWORD", "Test.1234"),
+#         "HOST": os.environ.get("DB_HOST", "34.18.83.6"),  # proxy
 #         "PORT": os.environ.get("DB_PORT", "5432"),
 #         "CONN_MAX_AGE": 600,
 #     }
@@ -98,7 +110,7 @@ WSGI_APPLICATION = 'hostingtest.wsgi.application'
 DB_ENGINE = os.environ.get("DB_ENGINE", "django.db.backends.postgresql")
 DB_NAME = os.environ.get("DB_NAME", "testdb")
 DB_USER = os.environ.get("DB_USER", "postgres")
-DB_PASSWORD = os.environ.get("DB_PASSWORD", "test")
+DB_PASSWORD = os.environ.get("DB_PASSWORD", "Test.1234")
 DB_HOST = os.environ.get("DB_HOST", "")  # if empty, we'll try socket
 DB_PORT = os.environ.get("DB_PORT", "5432")
 INSTANCE_CONNECTION_NAME = os.environ.get("INSTANCE_CONNECTION_NAME", "ai-innovations-exp:me-central1:postgres")  # PROJECT:REGION:INSTANCE
