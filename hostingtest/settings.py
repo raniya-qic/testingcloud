@@ -80,22 +80,41 @@ WSGI_APPLICATION = 'hostingtest.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 
+
 # DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / "db.sqlite3",
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": os.environ.get("DB_NAME", "testdb"),
+#         "USER": os.environ.get("DB_USER", "postgres"),
+#         "PASSWORD": os.environ.get("DB_PASSWORD", "test"),
+#         "HOST": os.environ.get("DB_HOST", "127.0.0.1"),  # proxy
+#         "PORT": os.environ.get("DB_PORT", "5432"),
+#         "CONN_MAX_AGE": 600,
 #     }
 # }
 
 
+# settings.py (replace your DATABASES with the following)
+DB_ENGINE = os.environ.get("DB_ENGINE", "django.db.backends.postgresql")
+DB_NAME = os.environ.get("DB_NAME", "testdb")
+DB_USER = os.environ.get("DB_USER", "postgres")
+DB_PASSWORD = os.environ.get("DB_PASSWORD", "test")
+DB_HOST = os.environ.get("DB_HOST", "")  # if empty, we'll try socket
+DB_PORT = os.environ.get("DB_PORT", "5432")
+INSTANCE_CONNECTION_NAME = os.environ.get("INSTANCE_CONNECTION_NAME", "ai-innovations-exp:me-central1:postgres")  # PROJECT:REGION:INSTANCE
+
+if INSTANCE_CONNECTION_NAME and not DB_HOST:
+    # Use Cloud SQL Unix socket
+    DB_HOST = f"/cloudsql/{INSTANCE_CONNECTION_NAME}"
+
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME", "testdb"),
-        "USER": os.environ.get("DB_USER", "postgres"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", "test"),
-        "HOST": os.environ.get("DB_HOST", "127.0.0.1"),  # proxy
-        "PORT": os.environ.get("DB_PORT", "5432"),
+        "ENGINE": DB_ENGINE,
+        "NAME": DB_NAME,
+        "USER": DB_USER,
+        "PASSWORD": DB_PASSWORD,
+        "HOST": DB_HOST,
+        "PORT": DB_PORT,
         "CONN_MAX_AGE": 600,
     }
 }
