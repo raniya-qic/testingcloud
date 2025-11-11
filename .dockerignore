@@ -1,6 +1,0 @@
-.git
-__pycache__/
-*.py[cod]
-.env
-db.sqlite3
-staticfiles/*  # optional (we re-generate at build)

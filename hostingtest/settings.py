@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-4queu^lu7$&6gt+co)l#bth33eqf6io!scd=rjm8(8&12r*ft+
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
 
-DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() == "true"
+DEBUG = True
 
 
 ALLOWED_HOSTS = ['*']
@@ -80,50 +80,25 @@ WSGI_APPLICATION = 'hostingtest.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 
-# --- Database: Cloud SQL Postgres via Connector ---
-DB_NAME = os.environ.get("DB_NAME", "appdb")
-DB_USER = os.environ.get("DB_USER", "appuser")
-DB_PASS = os.environ.get("DB_PASS", "test")
-DB_CONN_NAME = os.environ.get("INSTANCE_CONNECTION_NAME") 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / "db.sqlite3",
+#     }
+# }
 
-# ai-innovations-exp:us-central1:django-postgres
 
-if DB_CONN_NAME:
-    # Use the Cloud SQL Python Connector
-    from google.cloud.sql.connector import Connector, IPTypes
-    import psycopg
-    connector = Connector()
-
-    def getconn():
-        return connector.connect(
-            DB_CONN_NAME,
-            "pg8000",  # psycopg3 speaks pg8000 wire protocol through the connector
-            user=DB_USER,
-            password=DB_PASS,
-            db=DB_NAME,
-            ip_type=IPTypes.PUBLIC,  # or PRIVATE if you configure it
-        )
-
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": DB_NAME,
-            "USER": DB_USER,
-            "PASSWORD": DB_PASS,
-            "HOST": f"/cloudsql/{DB_CONN_NAME}",
-            "PORT": "5432",
-            "OPTIONS": {
-                "connection_factory": getconn
-            },
-        }
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("DB_NAME", "testdb"),
+        "USER": os.environ.get("DB_USER", "postgres"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", "test"),
+        "HOST": os.environ.get("DB_HOST", "127.0.0.1"),  # proxy
+        "PORT": os.environ.get("DB_PORT", "5432"),
+        "CONN_MAX_AGE": 600,
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / "db.sqlite3",
-        }
-    }
+}
 
 
 # Password validation
